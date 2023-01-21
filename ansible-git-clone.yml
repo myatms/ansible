@@ -1,0 +1,24 @@
+- name: lab
+  hosts: localhost
+  become: yes
+  become_method: sudo
+  become_user: ubuntu
+
+  vars: 
+    repos: "git@gitlab.com:myatms/aaa.git"
+    dest: "/var/www/html/vue"
+    sshkey: "~/.ssh/id_rsa.pub"
+
+  tasks: 
+    - name: add ssh key
+      ansible.builtin.authorized_key:
+        user: ubuntu
+        key: "{{ lookup('file', sshkey) }}"
+        state: present
+
+    - name: checkout git repo
+      ansible.builtin.git: 
+        repo: "{{ repos }}" 
+        dest: "{{ dest }}"
+        update: yes
+        version: dev
